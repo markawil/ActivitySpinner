@@ -8,9 +8,11 @@
 
 import UIKit
 
+@IBDesignable
 class ActivitySpinnerView : UIView {
     
     let circleLayer = CAShapeLayer()
+    let circlePathLayer = CAShapeLayer()
     
     @IBInspectable var lineWidth: CGFloat = 8 {
         didSet {
@@ -55,8 +57,12 @@ class ActivitySpinnerView : UIView {
         
         self.layer.masksToBounds = false
         circleLayer.lineWidth = self.lineWidth
+        circlePathLayer.lineWidth = self.lineWidth
         circleLayer.fillColor = nil
+        circlePathLayer.fillColor = nil
         circleLayer.strokeColor = UIColor.red.cgColor
+        circlePathLayer.strokeColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1).cgColor // silver
+        layer.addSublayer(circlePathLayer)
         layer.addSublayer(circleLayer)
         self.layer.cornerRadius = 10.0
         updateAnimation()
@@ -65,6 +71,12 @@ class ActivitySpinnerView : UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
+        setupCirclePathLayer()
+        setupCircleLayer()
+    }
+    
+    func setupCircleLayer() {
         
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
         let radius = (min(bounds.width, bounds.height) / 2 - circleLayer.lineWidth) - 4
@@ -75,6 +87,19 @@ class ActivitySpinnerView : UIView {
         
         circleLayer.position = center
         circleLayer.path = path.cgPath
+    }
+    
+    func setupCirclePathLayer() {
+        
+        let center = CGPoint(x: bounds.midX, y: bounds.midY)
+        let radius = (min(bounds.width, bounds.height) / 2 - circleLayer.lineWidth) - 4
+        
+        let startAngle = CGFloat(-Double.pi*2)
+        let endAngle = startAngle + CGFloat(Double.pi*2)
+        let path = UIBezierPath(arcCenter: CGPoint.zero, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        
+        circlePathLayer.position = center
+        circlePathLayer.path = path.cgPath
     }
     
     func updateAnimation() {
